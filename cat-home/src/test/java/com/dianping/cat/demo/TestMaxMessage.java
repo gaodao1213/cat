@@ -17,12 +17,30 @@ public class TestMaxMessage {
 
 	@Test
 	public void testSend() throws Exception {
-		for (int i = 0; i < 10000; i++) {
-			Transaction t = Cat.getProducer().newTransaction("CatTest", "CatTest" + i % 10);
+		for (int i = 0; i < 200; i++) {
+			Transaction t = Cat.getProducer().newTransaction("tranTest2", "tranTestName" + i % 10);
 			t.setStatus(Message.SUCCESS);
-			Cat.getProducer().newEvent("Cache.kvdb", "Method" + i % 10 + ":missed");
-			Cat.logError(new NullPointerException());
-			t.addData("key and value");
+			Cat.logEvent("mytestevent2","mytesteventname0");
+			Cat.logMetricForCount("dayCount");
+			Cat.logMetricForSum("daySyum",1);
+			t.complete();
+		}
+		Thread.sleep(10 * 1000);
+	}
+	@Test
+	public void testMySend() throws Exception {
+		String type = "myTest1";
+		String name = "myTestname7";
+		Transaction t = Cat.newTransaction(type,name);
+		try {
+			Cat.logEvent("mytestevent7","mytesteventname5");
+			Cat.logMetricForCount("dayCount");
+			Cat.logMetricForSum("dayCount",1);
+
+			t.setStatus(Message.SUCCESS);
+		}catch (Exception e){
+			t.setStatus(e);
+		}finally {
 			t.complete();
 		}
 		Thread.sleep(10 * 1000);
@@ -35,55 +53,63 @@ public class TestMaxMessage {
 
 		while (i > 0) {
 			i++;
-			Transaction total = Cat.newTransaction("Test", "Test");
-			Transaction t = Cat.getProducer().newTransaction("Cache.kvdb", "Method" + i % 10);
+			Transaction total = Cat.newTransaction("Test7", "Test7");
+			Transaction t = Cat.getProducer().newTransaction("Cache.kvdbt1", "Method" + i % 10);
 			t.setStatus(Message.SUCCESS);
 			Cat.getProducer().newEvent("Cache.kvdb", "Method" + i % 10 + ":missed");
-			t.addData("key and value");
+			Cat.logMetricForCount("dayCount");
+			t.addData("key and value t");
 
-			Transaction t2 = Cat.getProducer().newTransaction("Cache.web", "Method" + i % 10);
+			Transaction t2 = Cat.getProducer().newTransaction("Cache.webt2", "Method" + i % 10);
 			Cat.getProducer().newEvent("Cache.web", "Method" + i % 10 + ":missed");
-			t2.addData("key and value");
+			t2.addData("key and value t2");
+			Cat.logMetricForCount("dayCount");
 			t2.setStatus(Message.SUCCESS);
 			t2.complete();
 
-			Transaction t3 = Cat.getProducer().newTransaction("Cache.memcached", "Method" + i % 10);
-			t3.addData("key and value");
+			Transaction t3 = Cat.getProducer().newTransaction("Cache.memcachedt3", "Method" + i % 10);
+			t3.addData("key and value t3");
+			Cat.logMetricForSum("daybuy",3);
 			t3.setStatus(Message.SUCCESS);
 			t3.complete();
 
-			Transaction t4 = Cat.getProducer().newTransaction("Cache.memcached", "Method" + i % 10);
-			t4.addData("key and value");
+			Transaction t4 = Cat.getProducer().newTransaction("Cache.memcachedt4", "Method" + i % 10);
+			t4.addData("key and value t4");
+			t4.getDurationInMicros();
 			t4.setStatus(Message.SUCCESS);
 			t4.complete();
 
-			Transaction t5 = Cat.getProducer().newTransaction("Cache.memcached", "Method" + i % 10);
-			Transaction t6 = Cat.getProducer().newTransaction("Cache.memcached", "Method" + i % 10);
-			t6.addData("key and value");
+			Transaction t5 = Cat.getProducer().newTransaction("Cache.memcachedt5", "Method" + i % 10);
+			Transaction t6 = Cat.getProducer().newTransaction("Cache.memcachedt6", "Method" + i % 10);
+			t6.addData("key and value t6");
+			Cat.logMetricForCount("dayCount",2);
 			t6.setStatus(Message.SUCCESS);
 			t6.complete();
 
-			Transaction t9 = Cat.getProducer().newTransaction("Cache.memcached", "Method" + i % 10);
-			Transaction t7 = Cat.getProducer().newTransaction("Cache.memcached", "Method" + i % 10);
-			t7.addData("key and value");
+			Transaction t9 = Cat.getProducer().newTransaction("Cache.memcachedt9", "Method" + i % 10);
+			Transaction t7 = Cat.getProducer().newTransaction("Cache.memcachedt7", "Method" + i % 10);
+			t7.addData("key and value t7");
 			t7.setStatus(Message.SUCCESS);
 			t7.complete();
 
-			Transaction t8 = Cat.getProducer().newTransaction("Cache.memcached", "Method" + i % 10);
-			t8.addData("key and value");
+			Transaction t8 = Cat.getProducer().newTransaction("Cache.memcachedt8", "Method" + i % 10);
+			t8.addData("key and value t8");
 			t8.setStatus(Message.SUCCESS);
 			t8.complete();
 
-			t9.addData("key and value");
+			t9.addData("key and value t9");
 			t9.setStatus(Message.SUCCESS);
 			t9.complete();
 
-			t5.addData("key and value");
+			t5.addData("key and value t5");
 			t5.setStatus(Message.SUCCESS);
 			t5.complete();
 
 			MessageTree tree = (MessageTree) Cat.getManager().getThreadLocalMessageTree();
 			String messageId = tree.getMessageId();
+			if(messageId == null){
+				messageId = Cat.createMessageId();
+			}
 
 			String[] ids = messageId.split("-");
 			String ip6 = ids[1];
